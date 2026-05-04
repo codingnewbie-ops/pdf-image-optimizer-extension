@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PDF & Image Optimizer",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Ottimizza e comprime automaticamente PDF e immagini prima di caricarli su qualsiasi sito web.",
   "icons": {
     "16": "icons/icon16.png",
