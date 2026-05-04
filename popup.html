@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Optimizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --indigo: #5b5ef4;
+      --indigo-dark: #4340c8;
+      --indigo-light: #ebe9ff;
+      --surface: #fafafa;
+      --border: #e8e5ff;
+      --text: #1a1740;
+      --muted: #7c7a9b;
+      --success: #22c55e;
+      --radius: 12px;
+    }
+
+    body {
+      width: 320px;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* ── Header ──────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, #4340c8 0%, #7c5ef4 100%);
+      padding: 20px 20px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -20px; right: -20px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; left: 40px;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      position: relative; z-index: 1;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+    .logo-sub {
+      font-size: 10px;
+      color: rgba(255,255,255,0.65);
+      font-weight: 400;
+      margin-top: 1px;
+    }
+
+    /* ── Toggle principale ──────────────────────── */
+    .master-toggle {
+      margin-top: 16px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative; z-index: 1;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .master-toggle-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #fff;
+    }
+    .master-toggle-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 2px;
+    }
+
+    /* ── Toggle switch ──────────────────────────── */
+    .toggle {
+      position: relative;
+      width: 44px; height: 24px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.25);
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.25s;
+      border: 1.5px solid rgba(255,255,255,0.3);
+    }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 18px; height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.25s;
+    }
+    .toggle input:checked + .toggle-track {
+      background: var(--success);
+      border-color: var(--success);
+    }
+    .toggle input:checked + .toggle-track::after {
+      transform: translateX(20px);
+    }
+
+    /* ── Body ────────────────────────────────────── */
+    .body { padding: 16px; }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    /* ── Compression level ───────────────────────── */
+    .level-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .level-btn {
+      padding: 10px 6px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.18s;
+      font-family: inherit;
+    }
+    .level-btn:hover { border-color: var(--indigo); }
+    .level-btn.active {
+      border-color: var(--indigo);
+      background: var(--indigo-light);
+    }
+    .level-btn-icon { font-size: 16px; display: block; margin-bottom: 4px; }
+    .level-btn-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      display: block;
+    }
+    .level-btn-desc {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+      display: block;
+    }
+    .level-btn.active .level-btn-name { color: var(--indigo); }
+
+    /* ── Options ─────────────────────────────────── */
+    .options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+
+    .option-row {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .option-info { flex: 1; }
+    .option-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .option-desc {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Toggle piccolo (scuro) */
+    .toggle-sm {
+      position: relative; width: 36px; height: 20px; flex-shrink: 0;
+    }
+    .toggle-sm input { opacity: 0; width: 0; height: 0; }
+    .toggle-sm .toggle-track {
+      background: #ddd;
+      border-color: #ddd;
+    }
+    .toggle-sm .toggle-track::after {
+      width: 14px; height: 14px;
+    }
+    .toggle-sm input:checked + .toggle-track {
+      background: var(--indigo);
+      border-color: var(--indigo);
+    }
+    .toggle-sm input:checked + .toggle-track::after {
+      transform: translateX(16px);
+    }
+
+    /* ── Info badge ──────────────────────────────── */
+    .info-box {
+      background: var(--indigo-light);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 12px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .info-box-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .info-box-text { font-size: 11px; color: #4340c8; line-height: 1.5; }
+
+    /* ── Footer ──────────────────────────────────── */
+    .footer {
+      padding: 0 16px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .version { font-size: 10px; color: var(--muted); }
+    .saved-badge {
+      font-size: 11px; font-weight: 600;
+      background: #dcfce7; color: #16a34a;
+      border-radius: 20px; padding: 3px 10px;
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    /* Disabled state */
+    body.disabled .body { opacity: 0.4; pointer-events: none; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">📄</div>
+      <div>
+        <div class="logo-text">PDF Optimizer</div>
+        <div class="logo-sub">Compressione automatica al caricamento</div>
+      </div>
+    </div>
+
+    <div class="master-toggle">
+      <div>
+        <div class="master-toggle-label">Estensione attiva</div>
+        <div class="master-toggle-sub" id="status-text">Pronto a ottimizzare</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-enabled" checked>
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="section-title">Livello di compressione</div>
+
+    <div class="level-group">
+      <button class="level-btn" data-level="low">
+        <span class="level-btn-icon">🍃</span>
+        <span class="level-btn-name">Leggera</span>
+        <span class="level-btn-desc">Veloce<br>~10–20%</span>
+      </button>
+      <button class="level-btn active" data-level="medium">
+        <span class="level-btn-icon">⚡</span>
+        <span class="level-btn-name">Media</span>
+        <span class="level-btn-desc">Bilanciata<br>~20–40%</span>
+      </button>
+      <button class="level-btn" data-level="high">
+        <span class="level-btn-icon">🗜️</span>
+        <span class="level-btn-name">Massima</span>
+        <span class="level-btn-desc">Più lenta<br>~40–60%</span>
+      </button>
+    </div>
+
+    <div class="section-title">Opzioni</div>
+    <div class="options">
+      <div class="option-row">
+        <div class="option-info">
+          <div class="option-label">Comprimi automaticamente</div>
+          <div class="option-desc">Senza chiedere conferma ogni volta</div>
+        </div>
+        <label class="toggle toggle-sm">
+          <input type="checkbox" id="toggle-auto" checked>
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="option-row">
+        <div class="option-info">
+          <div class="option-label">Mostra notifica risultato</div>
+          <div class="option-desc">Visualizza quanto spazio è stato risparmiato</div>
+        </div>
+        <label class="toggle toggle-sm">
+          <input type="checkbox" id="toggle-notify" checked>
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="option-row">
+        <div class="option-info">
+          <div class="option-label">🖼️ Comprimi immagini</div>
+          <div class="option-desc">JPEG, PNG, WebP, BMP, TIFF, AVIF</div>
+        </div>
+        <label class="toggle toggle-sm">
+          <input type="checkbox" id="toggle-images" checked>
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <div id="image-quality-section">
+      <div class="section-title">Qualità immagini</div>
+      <div class="quality-row">
+        <span class="quality-label">Bassa</span>
+        <input type="range" id="quality-slider" min="20" max="90" value="60" step="5">
+        <span class="quality-label">Alta</span>
+        <span class="quality-val" id="quality-val">60%</span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <span class="info-box-icon">ℹ️</span>
+      <span class="info-box-text">
+        PDF e immagini vengono ottimizzati localmente. I tuoi file <strong>non vengono mai inviati</strong> a server esterni.
+      </span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="version">v1.1.0</span>
+    <div class="saved-badge" id="saved-badge" style="display:none">
+      ✅ <span id="saved-text">0 KB risparmiati</span>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
